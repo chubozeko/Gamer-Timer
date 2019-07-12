@@ -10,9 +10,10 @@ import java.util.prefs.PreferencesFactory
 class PrefUtil {
     companion object {
 
+        private const val TIMER_LENGTH_ID = "com.chandistudios.gamertimer.timer_length"
         fun getTimerLength(context: Context): Int {
-            // placeholder
-            return 1
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            return preferences.getInt(TIMER_LENGTH_ID, 10)
         }
 
         private const val PREVIOUS_TIMER_LENGTH_SECONDS_ID = "com.chandistudios.timer.previous_timer_length"
