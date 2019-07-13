@@ -11,11 +11,9 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         setSupportActionBar(toolbar2)
-        //supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        //toolbar2.setDisplayHomeAsUpEnabled(true)
-        //supportActionBar?.title = "Settings"
-//        setSupportActionBar(toolbar)
-//        toolbar.setLogo(R.drawable.ic_stop_black_24dp)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        toolbar2.setDisplayHomeAsUpEnabled(true)
+//        toolbar2.setLogo(R.drawable.ic_stop_black_24dp)
         toolbar2.title = "Settings"
     }
 }

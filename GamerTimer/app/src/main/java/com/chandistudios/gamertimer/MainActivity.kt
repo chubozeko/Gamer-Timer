@@ -47,17 +47,23 @@ class MainActivity : AppCompatActivity() {
         Stopped, Paused, Running
     }
 
+    enum class TimerType {
+        Gaming, Resting
+    }
+
     private lateinit var timer: CountDownTimer
     private var timerLengthSeconds = 0L
     private var timerState = TimerState.Stopped
     private var secondsRemaining = 0L
+    private var timerType = TimerType.Gaming
+    private var timerTypeTitle = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        toolbar.setLogo(R.drawable.ic_stop_black_24dp);
-        toolbar.title = "       Gamer Timer";
+        toolbar.setLogo(R.drawable.ic_gamepad)
+        toolbar.title = "Gamer Timer"
 
         fab_play.setOnClickListener { v ->
             startTimer()
@@ -73,6 +79,7 @@ class MainActivity : AppCompatActivity() {
 
         fab_stop.setOnClickListener { v ->
             timer.cancel()
+            changeTimerType()
             onTimerFinished()
         }
 
@@ -83,6 +90,13 @@ class MainActivity : AppCompatActivity() {
             timerState = TimerState.Running
             updateButtons()
         }
+
+        if (timerType == TimerType.Gaming)
+            timerTypeTitle = "GAMING TIME!"
+        else
+            timerTypeTitle = "time to rest..."
+
+        tv_timerTitle.text = timerTypeTitle
     }
 
     override fun onResume() {
@@ -105,18 +119,31 @@ class MainActivity : AppCompatActivity() {
             NotificationUtil.showTimerPaused(this)
         }
 
-        PrefUtil.setPreviousTimerLengthSeconds(timerLengthSeconds, this)
+        if (timerType == TimerType.Gaming){
+            PrefUtil.setPreviousTimerLengthSeconds(timerLengthSeconds, this)
+        } else {
+            PrefUtil.setPreviousRestTimerLengthSeconds(timerLengthSeconds, this)
+        }
         PrefUtil.setSecondsRemaining(secondsRemaining, this)
         PrefUtil.setTimerState(timerState, this)
+        PrefUtil.setTimerType(timerType, this)
     }
 
     private fun initTimer(){
-        timerState = PrefUtil.getTimerState(this)
+        timerType = PrefUtil.getTimerType(this)
 
-        if(timerState == TimerState.Stopped)
-            setNewTimerLength()
-        else
-            setPreviousTimerLength()
+        timerState = PrefUtil.getTimerState(this)
+        if(timerState == TimerState.Stopped) {
+            if (timerType == TimerType.Gaming)
+                setNewTimerLength()
+            else
+                setNewRestTimerLength()
+        } else {
+            if (timerType == TimerType.Gaming)
+                setPreviousTimerLength()
+            else
+                setPreviousRestTimerLength()
+        }
 
         secondsRemaining = if(timerState == TimerState.Running || timerState == TimerState.Paused)
             PrefUtil.getSecondsRemaining(this)
@@ -139,7 +166,11 @@ class MainActivity : AppCompatActivity() {
     private fun onTimerFinished(){
         timerState = TimerState.Stopped
 
-        setNewTimerLength()
+        if(timerType == TimerType.Gaming)
+            setNewTimerLength()
+        else
+            setNewRestTimerLength()
+
 
         pb_timer.progress = 0
 
@@ -148,6 +179,16 @@ class MainActivity : AppCompatActivity() {
 
         updateButtons()
         updateCountdownUI()
+    }
+
+    private fun changeTimerType(){
+        if(timerType == TimerType.Gaming) {
+            timerType = TimerType.Resting
+            timerTypeTitle = "GAMING TIME!"
+        } else {
+            timerType = TimerType.Gaming
+            timerTypeTitle = "time to rest..."
+        }
     }
 
     private fun startTimer(){
@@ -174,6 +215,17 @@ class MainActivity : AppCompatActivity() {
         pb_timer.max = timerLengthSeconds.toInt()
     }
 
+    private fun setNewRestTimerLength(){
+        val lengthInMinutes = PrefUtil.getRestTimerLength(this)
+        timerLengthSeconds = (lengthInMinutes * 60L)
+        pb_timer.max = timerLengthSeconds.toInt()
+    }
+
+    private fun setPreviousRestTimerLength(){
+        timerLengthSeconds = PrefUtil.getPreviousRestTimerLengthSeconds(this)
+        pb_timer.max = timerLengthSeconds.toInt()
+    }
+
     private fun updateCountdownUI(){
         val minutesUntilFinished = secondsRemaining / 60
         val secondsInMinutesUntilFinished = secondsRemaining - minutesUntilFinished * 60
@@ -182,6 +234,12 @@ class MainActivity : AppCompatActivity() {
         if (secondsStr.length == 2) secondsStr
         else "0" + secondsStr }"
         pb_timer.progress = (timerLengthSeconds - secondsRemaining).toInt()
+        if(timerType == TimerType.Gaming) {
+            timerTypeTitle = "GAMING TIME!"
+        } else {
+            timerTypeTitle = "time to rest..."
+        }
+        tv_timerTitle.text = timerTypeTitle
     }
 
     private fun updateButtons(){

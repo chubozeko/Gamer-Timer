@@ -55,7 +55,7 @@ class NotificationUtil {
 
             val df = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT)
 
-            val nBuilder = getBasicNotificationBuilder(context, CHANNEL_ID_TIMER, true)
+            val nBuilder = getBasicNotificationBuilder(context, CHANNEL_ID_TIMER, false)
             nBuilder.setContentTitle("Timer is Running!")
                 .setContentText("End: ${df.format(Date(wakeUpTime))}")
                 .setContentIntent(getPendingIntentWithStack(context, MainActivity::class.java))

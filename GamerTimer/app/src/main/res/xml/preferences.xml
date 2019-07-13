@@ -4,12 +4,24 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
     <com.pavelsikun.seekbarpreference.SeekBarPreferenceCompat
             android:key="com.chandistudios.gamertimer.timer_length"
-            android:title="Timer Length"
-            android:summary="How many minutes should the timer run?"
+            android:title="Gaming Timer Length"
+            android:summary="Gaming period (in minutes): "
 
-            android:defaultValue="10"
+            android:defaultValue="20"
             sample:msbp_minValue="1"
             sample:msbp_maxValue="60"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="minutes"
+            sample:msbp_dialogEnabled="true"/>
+
+    <com.pavelsikun.seekbarpreference.SeekBarPreferenceCompat
+            android:key="com.chandistudios.gamertimer.rest_timer_length"
+            android:title="Resting Timer Length"
+            android:summary="Resting period (in minutes): "
+
+            android:defaultValue="5"
+            sample:msbp_minValue="1"
+            sample:msbp_maxValue="10"
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="minutes"
             sample:msbp_dialogEnabled="true"/>
